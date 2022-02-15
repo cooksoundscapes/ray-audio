@@ -3,12 +3,6 @@
 #include <vector>
 #include "XmlParser.h"
 
-class Interaction
-{
-public:
-    Interaction();
-};
-
 class Graphics
 {
 public:
