@@ -9,7 +9,7 @@ LIBS := -lraylib -ljack -llo
 FILES := $(wildcard src/*.cpp) 
 OBJ := $(FILES:src/%.cpp=obj/%.o)
 
-OUTPUT := pd-reface
+OUTPUT := ray-audio
 
 .PHONY: all clean
 
