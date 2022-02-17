@@ -249,19 +249,19 @@ void XmlParser::createComponent(xml_node<>* node, int index)
         ));
     } else if (c_class == "Control")
     {
-        auto drawfunc = control_types.find(c_type)->second;
-        if (!drawfunc) {
+        auto setupfunc = control_types.find(c_type)->second;
+        if (!setupfunc) {
             std::cout << "Unregistered component type " << c_type << '\n';
             return;
         }
         view.push_back(new Component<Audio::MidiBuffer>(
             id,
             audio_cli.getMidiBuffer(),
-            drawfunc,
+            setupfunc(),
             channel,
             getElementBox(parentData, index),
             {c_label, RAYWHITE, 20, 0, 0}
-        ));
+        ));  
     } else {
         std::cout << "Unregistered component class " << node->name() << '\n';
         return;

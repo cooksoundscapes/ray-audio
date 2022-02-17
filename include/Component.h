@@ -48,10 +48,11 @@ public:
         this->channel = ch;
         midi_value = 0;
     } 
+    const Buffer& buffer;
 
     int channel;
     int midi_value;
-    const Buffer& buffer;
+    void* storage;
 
     void draw() {
         render(this);

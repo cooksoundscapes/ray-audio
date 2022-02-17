@@ -16,12 +16,11 @@ OUTPUT := ray-audio
 all: $(OUTPUT)
 
 clean:
-	rm -rf obj/* && rm $(OUTPUT)
+	rm -rf obj && mkdir obj && rm -rf $(OUTPUT)
 
-$(OUTPUT): $(OBJ)
+$(OUTPUT): $(OBJ) $(C_OBJ)
 	$(CC) $^ $(LIBS) -o $@
-	
+
 obj/%.o: src/%.cpp | obj
 	$(CC) $(CPP_FLAGS) $(C_FLAGS) -c $< -o $@
-
 

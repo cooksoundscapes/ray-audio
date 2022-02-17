@@ -35,15 +35,3 @@ void Graphics::loop(XmlParser* document)
         EndDrawing();
     }
 }
-
-Color Graphics::fromHex(int hex)
-{
-    Color output;
-
-    output.r = ((hex >> 16) & 0xFF);  // Extract the RR byte
-    output.g = ((hex >> 8) & 0xFF);   // Extract the GG byte
-    output.b = ((hex) & 0xFF);        // Extract the BB byte
-    output.a = 255;
-    
-    return output;
-}

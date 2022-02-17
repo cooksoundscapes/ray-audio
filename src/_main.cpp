@@ -4,6 +4,16 @@
 
 /*
  * Now what?
+ * First, it should switch (again) to a more low level API such as SDL. Raylib is proving to be
+ * hard on manipulating things like cropped boxes and texts. must do this
+ * before implementing Lua theming. Good thing is that all the systems are WELL separated, so
+ * it'll not impact on anything else.
+ * 
+ * Also, should make attributes for containers for custom sizes. A sidebar should be around
+ * 15% of the window width, not 50%;
+ * 
+ * another one is a drag & drop interaction between components, like DirTree and WaveTable;
+ * 
  * got the idea of using Lua for theming. Will work something like a CSS file, with objects w/
  * key-value pairs for component types, background, "classes", and there'll be a precedence, e.g:
  * - apply "global" styles first: background, component types;
@@ -13,7 +23,7 @@
  */
 int main(int argc, const char* argv[])
 {
-    Graphics window{1024, 768}; //size;
+    Graphics window{800, 600}; //size;
     Audio client{4, 2}; // audio & midi ports;
 
     //needs function to load different files and link between them!

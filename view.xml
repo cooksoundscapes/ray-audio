@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SimplePanel>
+    <Row>
+    <Control type="DirTree" />
     <Column>
         <Row>
             <Audio type="VU" label="L" channel='0' />
@@ -35,4 +37,5 @@
             <Control type="Slider" channel="56" label="Sl-9" />
         </Row>
     </Column>
+    </Row>
 </SimplePanel>
