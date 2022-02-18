@@ -11,14 +11,9 @@ DrawAudio Oscilloscope = [](Component<Audio::AudioBuffer>* self)
     float midpoint = cnv.height/2;
     float jump = cnv.width / self->buffer.size();
 
-    DrawRectangle(
-        cnv.x,
-        cnv.y,
-        cnv.width,
-        cnv.height,
-        {120, 120, 120, 255}
-    );
+    DrawRectangleRec(cnv, fromHex(0x99aa90));
     drawLabel(self->label, cnv, false);
+
     for (size_t i{0}; i < self->buffer.size()-1; i++)
     {
         float amp{
@@ -27,6 +22,6 @@ DrawAudio Oscilloscope = [](Component<Audio::AudioBuffer>* self)
         float nextamp{
             ((self->buffer[i+1]*-1)+1)*(midpoint) + self->rect.y + self->label.size
         };
-        DrawLine((int)i*jump+cnv.x, (int)amp, (int)(i+1)*jump+cnv.x, (int)nextamp, {255, 255, 255, 255} );
+        DrawLine((int)i*jump+cnv.x, (int)amp, (int)(i+1)*jump+cnv.x, (int)nextamp, fromHex(0xfafafa) );
     }
 };

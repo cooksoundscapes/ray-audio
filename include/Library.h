@@ -42,7 +42,7 @@ extern setup_t Slider;
 extern setup_t Knob;
 extern setup_t Toggle;
 extern setup_t DirTree;
-// extern setup_t Wavetable;
+extern setup_t Wavetable;
 // extern setup_t Transport;
 // extern setup_t Table;
 // extern setup_t CarouselBox;
@@ -60,8 +60,8 @@ const std::map<std::string, setup_t> control_types{
     {"Slider", Slider},
     {"Knob", Knob},
     {"Toggle", Toggle},
-    {"DirTree", DirTree}
-    //{"Wavetable", Wavetable}
+    {"DirTree", DirTree},
+    {"Wavetable", Wavetable}
     //{"Table", Table},
     //{"CarouselBox", CarouselBox},
     //{"Multitable", Multitable},
