@@ -7,7 +7,7 @@
 
 using NodeArray = std::vector<xml_node<>*>;
 
-//overloading stream
+//overloading stream for Rectangle
 std::ostream& operator <<(std::ostream& out, const Rectangle& r)
 {
     out << r.x << ' ' << r.y << ' ' << r.width << ' ' << r.height;
@@ -28,8 +28,7 @@ NodeArray filterNode(xml_node<>*& parent, std::string name)
     return output;
 }
 
-//overload w/out filter
-NodeArray filterNode(xml_node<>*& parent)
+NodeArray getChildren(xml_node<>*& parent)
 {
     NodeArray output;
     for(
@@ -42,6 +41,26 @@ NodeArray filterNode(xml_node<>*& parent)
     } 
     return output;
 }
+
+Rectangle getElementBox(const XmlParser::Container& parent, int index)
+{
+    float ratio{ parent.division_table[index] };
+    float stack_position{0};
+    for (int i{0}; i < index; i++) {
+        stack_position += parent.division_table[i];
+    }
+    Rectangle rect = {
+        (parent.isVertical) ? parent.rect.x
+         : (parent.rect.width * stack_position) + parent.rect.x,
+        (!parent.isVertical) ? parent.rect.y
+         : (parent.rect.height * stack_position) + parent.rect.y,
+        (parent.isVertical) ? parent.rect.width
+         : parent.rect.width * ratio,
+        (!parent.isVertical) ? parent.rect.height
+         : parent.rect.height * ratio
+    };
+    return rect;
+};
 
 long XmlParser::id_generator{0};
 
@@ -85,6 +104,13 @@ void XmlParser::render()
     index_pool.reserve(256);
     boxModel.clear();
     xml_node<>* target = root->first_node();
+    //calculate font based on window width:
+    base_font_size = font_breakpoints.begin()->second;
+    for (auto& bp : font_breakpoints) {
+        if (window_width > bp.first)
+            base_font_size = bp.second;
+    }
+    //std::cout << "At " << window_width << " width, font size is " << base_font_size << '\n';
 
     //start traversing the DOM;
     while (target)
@@ -138,26 +164,6 @@ BaseComponent* XmlParser::getComponent(const std::string& id)
     return *comp;
 }
 
-Rectangle getElementBox(const XmlParser::Container& parent, int index)
-{
-    float stack_position{0};
-    float ratio{ parent.division_table[index] };
-    for (int i{0}; i < index; i++) {
-        stack_position += parent.division_table[i];
-    }
-    Rectangle rect = {
-        (parent.isVertical) ? parent.rect.x
-         : (parent.rect.width * stack_position) + parent.rect.x,
-        (!parent.isVertical) ? parent.rect.y
-         : (parent.rect.height * stack_position) + parent.rect.y,
-        (parent.isVertical) ? parent.rect.width
-         : parent.rect.width * ratio,
-        (!parent.isVertical) ? parent.rect.height
-         : parent.rect.height * ratio
-    };
-    return rect;
-};
-
 void XmlParser::createId(xml_node<>* node, std::string& id)
 {  
     id = std::to_string(id_generator++);
@@ -178,7 +184,7 @@ void XmlParser::processNode(xml_node<>* node, int depth, int index)
     }
     if (isContainer) {      
         //count children and define division table;
-        auto children = filterNode(node);
+        auto children = getChildren(node);
         std::vector<float> children_sizes;
         float accumulated{1};
         int dynamic_children{0};
@@ -247,8 +253,7 @@ void XmlParser::createComponent(xml_node<>* node, int index)
         //update only what's required and return;
         auto component = getComponent(old_id->value());
         component->rect = getElementBox(parentData, index);
-        //here, we should define breakpoints and refer to them;
-        //component->label.size = ...;
+        component->label.size = base_font_size;
         return;
     }
     createId(node, id);
@@ -272,7 +277,7 @@ void XmlParser::createComponent(xml_node<>* node, int index)
             audio_cli.getBuffer(channel),
             drawfunc,
             getElementBox(parentData, index),
-            {c_label, RAYWHITE, 20, 0, 0}
+            {c_label, RAYWHITE, base_font_size, 0, 0}
         ));
     } else if (c_class == "Control")
     {
@@ -287,7 +292,7 @@ void XmlParser::createComponent(xml_node<>* node, int index)
             setupfunc(),
             channel,
             getElementBox(parentData, index),
-            {c_label, RAYWHITE, 20, 0, 0}
+            {c_label, RAYWHITE, base_font_size, 0, 0}
         ));  
     } else {
         std::cout << "Unregistered component class " << node->name() << '\n';

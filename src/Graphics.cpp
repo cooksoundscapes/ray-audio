@@ -22,11 +22,13 @@ void Graphics::loop(XmlParser* document)
     {
         if (width != GetScreenWidth() || height != GetScreenHeight())
         {
+            window_width = GetScreenWidth();
             width = GetScreenWidth();
             height = GetScreenHeight();
             document->render();
         }
         mouse_position = GetMousePosition();
+        
         BeginDrawing();
         ClearBackground(BLACK);
 

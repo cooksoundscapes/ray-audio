@@ -10,7 +10,7 @@ public:
     ~Graphics();
     
     void loop(XmlParser*);    
-private:
     
+private:
     int width, height;
 };

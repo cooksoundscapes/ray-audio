@@ -45,6 +45,7 @@ private:
     void processNode(xml_node<>*, int, int);
     void createComponent(xml_node<>*, int i);
     void createId(xml_node<>*, std::string&);
+    int base_font_size;
 
     BaseComponent* getComponent(const std::string& id);
     const Container& getParentNode(xml_node<>*);

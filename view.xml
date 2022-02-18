@@ -3,7 +3,7 @@
     <Row>
     <Control type="DirTree" fixed="0.2" />
     <Column >
-        <Row>
+        <Row fixed="0.2">
             <Audio type="VU" label="L" channel='0' />
             <Audio type="VU" label="R" channel='1' />
             <Audio type="VU" label="aux-L" channel='2' />

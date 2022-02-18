@@ -55,7 +55,7 @@ setup_t DirTree = []()
     return DrawControl(
         [directory, path](Component<Audio::MidiBuffer>* self) mutable
         {
-            float font = 20;
+            float font = self->label.size;
             const Rectangle& base = self->rect;
 
             Rectangle textbox{ 
@@ -64,7 +64,7 @@ setup_t DirTree = []()
                 base.width-spacing*2, 
                 font 
             };
-            int maxLength = textbox.width / (font*.6);
+            int maxLength = textbox.width / (font);
 
             DrawRectangleRec(base, fromHex(0x2f2f2f));
             DrawRectangleRec(textbox, fromHex(0xa3a3a3));
@@ -93,7 +93,7 @@ setup_t DirTree = []()
                 );
                 DrawText(
                     TextSubtext(entry.path.c_str(), 0, maxLength), 
-                    filebox.x+4, filebox.y+2, font, WHITE 
+                    filebox.x*1.2f, filebox.y+2, font, WHITE 
                 );
                 i++;
                 if (active && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))

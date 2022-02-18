@@ -21,10 +21,18 @@ const std::map<std::string, Flow> container_types{
 //conveniences
 const float spacing = 8;
 extern Vector2 mouse_position;
+extern int window_width;
 extern void drawMovingBar(Rectangle, float, Color, bool vertical = true, bool inverted = false);
 extern void drawLabel(BaseComponent::Label, Rectangle, bool centered = true);
 extern void updateValue(Component<Audio::MidiBuffer>*);
 extern Color fromHex(int);
+
+//breakpoints based on window width;
+const std::map<int, int> font_breakpoints{
+    {320, 10},
+    {480, 20},
+    {720, 30}
+};
 
 //components
 extern DrawAudio VU;

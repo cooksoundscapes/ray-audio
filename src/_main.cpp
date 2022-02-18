@@ -18,8 +18,12 @@
  * Lua state will cook those objects into structs and hash maps, and the XmlParser will fetch 
  * all matching data at render time. Any change at the theme file should cause a re-rendering.
  */
+
+int window_width;
+
 int main(int argc, const char* argv[])
 {
+    window_width = 640;
     Graphics window{640, 480}; //size;
     Audio client{4, 2}; // audio & midi ports;
 
