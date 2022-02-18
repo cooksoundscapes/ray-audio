@@ -2,9 +2,6 @@
 #include <filesystem>
 #include <sstream>  
 
-/*
- * FALTA: scrolling bar e permission da home folder
- */
 namespace fs = std::filesystem;
 
 struct FileInfo {
@@ -67,9 +64,14 @@ setup_t DirTree = []()
                 base.width-spacing*2, 
                 font 
             };
+            int maxLength = textbox.width / (font*.6);
+
             DrawRectangleRec(base, fromHex(0x2f2f2f));
             DrawRectangleRec(textbox, fromHex(0xa3a3a3));
-            DrawText( path.c_str(), textbox.x+4 , textbox.y+2, font, WHITE );
+            DrawText( 
+                TextSubtext(path.c_str(), 0, maxLength), 
+                textbox.x+4 , textbox.y+2, font, WHITE 
+            );
             if ( (base.height) < (float)(directory.size()*font) ) {
                 //needs a scrollbar;
             }
@@ -89,7 +91,10 @@ setup_t DirTree = []()
                 DrawRectangleRec(filebox, (active) ? 
                     fromHex(0xddaa00) : (i%2 == 0) ? fromHex(0xa3a3a3) : fromHex(0xb0b0b0) 
                 );
-                DrawText(entry.path.c_str(), filebox.x+4, filebox.y+2, font, WHITE );
+                DrawText(
+                    TextSubtext(entry.path.c_str(), 0, maxLength), 
+                    filebox.x+4, filebox.y+2, font, WHITE 
+                );
                 i++;
                 if (active && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {

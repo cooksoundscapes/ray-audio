@@ -11,7 +11,6 @@ using DrawAudio = Component<Audio::AudioBuffer>::DrawFunction;
 //setup_t returns the actual drawing function, providing a onetime setup;
 using setup_t = std::function<DrawControl()>;
 
-const float spacing = 8;
 enum Flow { H, V }; //horizontal, vertical
 
 const std::map<std::string, Flow> container_types{
@@ -20,6 +19,7 @@ const std::map<std::string, Flow> container_types{
 };
 
 //conveniences
+const float spacing = 8;
 extern Vector2 mouse_position;
 extern void drawMovingBar(Rectangle, float, Color, bool vertical = true, bool inverted = false);
 extern void drawLabel(BaseComponent::Label, Rectangle, bool centered = true);

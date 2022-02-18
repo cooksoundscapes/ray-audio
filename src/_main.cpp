@@ -9,9 +9,6 @@
  * before implementing Lua theming. Good thing is that all the systems are WELL separated, so
  * it'll not impact on anything else.
  * 
- * Also, should make attributes for containers for custom sizes. A sidebar should be around
- * 15% of the window width, not 50%;
- * 
  * another one is a drag & drop interaction between components, like DirTree and WaveTable;
  * 
  * got the idea of using Lua for theming. Will work something like a CSS file, with objects w/
@@ -23,7 +20,7 @@
  */
 int main(int argc, const char* argv[])
 {
-    Graphics window{800, 600}; //size;
+    Graphics window{640, 480}; //size;
     Audio client{4, 2}; // audio & midi ports;
 
     //needs function to load different files and link between them!

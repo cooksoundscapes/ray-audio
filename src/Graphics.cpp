@@ -17,6 +17,7 @@ Graphics::~Graphics()
 
 void Graphics::loop(XmlParser* document)
 {
+    document->render();
     while (!WindowShouldClose())
     {
         if (width != GetScreenWidth() || height != GetScreenHeight())

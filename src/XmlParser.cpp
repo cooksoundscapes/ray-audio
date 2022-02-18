@@ -140,15 +140,20 @@ BaseComponent* XmlParser::getComponent(const std::string& id)
 
 Rectangle getElementBox(const XmlParser::Container& parent, int index)
 {
+    float stack_position{0};
+    float ratio{ parent.division_table[index] };
+    for (int i{0}; i < index; i++) {
+        stack_position += parent.division_table[i];
+    }
     Rectangle rect = {
-        (parent.direction) ? parent.rect.x
-         : (parent.rect.width  / parent.child_count) * index + parent.rect.x,
-        (!parent.direction) ? parent.rect.y
-         : (parent.rect.height / parent.child_count) * index + parent.rect.y,
-        (parent.direction) ? parent.rect.width
-         : (parent.rect.width) / parent.child_count,
-        (!parent.direction) ? parent.rect.height
-         : (parent.rect.height / parent.child_count)
+        (parent.isVertical) ? parent.rect.x
+         : (parent.rect.width * stack_position) + parent.rect.x,
+        (!parent.isVertical) ? parent.rect.y
+         : (parent.rect.height * stack_position) + parent.rect.y,
+        (parent.isVertical) ? parent.rect.width
+         : parent.rect.width * ratio,
+        (!parent.isVertical) ? parent.rect.height
+         : parent.rect.height * ratio
     };
     return rect;
 };
@@ -172,8 +177,30 @@ void XmlParser::processNode(xml_node<>* node, int depth, int index)
         }
     }
     if (isContainer) {      
-        //count children;
+        //count children and define division table;
         auto children = filterNode(node);
+        std::vector<float> children_sizes;
+        float accumulated{1};
+        int dynamic_children{0};
+        //comb children and define fixed values;
+        for (auto& child : children) {
+            auto isFixed = child->first_attribute("fixed");
+            if (isFixed) {
+                float fixed_size = std::stof(isFixed->value());
+                children_sizes.push_back(fixed_size);
+                accumulated -= fixed_size;
+            } else {
+                children_sizes.push_back(0);
+                dynamic_children++;
+            }
+        }
+        //search for zeros and divide the accumulated value by them;
+        float dynamic_size{accumulated / dynamic_children};
+        for (size_t i{0}; i < children_sizes.size(); i++) {
+            if (children_sizes[i] == 0) {
+                children_sizes[i] = dynamic_size;
+            }
+        }
 
         //fetch or generate ID;
         std::string id;
@@ -196,7 +223,7 @@ void XmlParser::processNode(xml_node<>* node, int depth, int index)
             id,
             direction,
             rect, 
-            children.size(),
+            children_sizes,
             0
         });
 

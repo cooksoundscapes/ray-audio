@@ -10,9 +10,9 @@ class XmlParser
 public:
     struct Container {
         std::string id;
-        Flow direction;
+        Flow isVertical;
         Rectangle rect;
-        size_t child_count;
+        std::vector<float> division_table;
         int inverted;
     };
     using View = std::vector<BaseComponent*>;

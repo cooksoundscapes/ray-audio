@@ -4,7 +4,7 @@ C_FLAGS := -std=c++17 -Wall #compiler
 CPP_FLAGS := -Irapidxml-1.13 -Iinclude -MMD -MP #compiler pre processor
 
 # in case of a internal lib folder, declare it before LIBS!
-LIBS := -lraylib -ljack -llo
+LIBS := -lstdc++fs -lraylib -ljack -llo 
 
 FILES := $(wildcard src/*.cpp) 
 OBJ := $(FILES:src/%.cpp=obj/%.o)
