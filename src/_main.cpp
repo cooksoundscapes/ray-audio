@@ -1,6 +1,6 @@
 #include <iostream>
 #include <functional>
-#include "Graphics.h"
+#include "SDL_Graphics.h"
 
 /*
  * Now what?
@@ -24,7 +24,7 @@ int window_width;
 int main(int argc, const char* argv[])
 {
     window_width = 640;
-    Graphics window{640, 480}; //size;
+    SDL_Engine window{640, 480}; //size;
     Audio client{4, 2}; // audio & midi ports;
 
     //needs function to load different files and link between them!
@@ -32,7 +32,7 @@ int main(int argc, const char* argv[])
     if (!argv[1]) file = "view.xml";
     else file = argv[1];
 
-    XmlParser document{file, client};
+    XmlParser document{file, client, window.getRenderer()};
 
     window.loop(&document);
 

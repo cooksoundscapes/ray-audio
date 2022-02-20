@@ -8,9 +8,9 @@
 using NodeArray = std::vector<xml_node<>*>;
 
 //overloading stream for Rectangle
-std::ostream& operator <<(std::ostream& out, const Rectangle& r)
+std::ostream& operator <<(std::ostream& out, const SDL_Rect& r)
 {
-    out << r.x << ' ' << r.y << ' ' << r.width << ' ' << r.height;
+    out << r.x << ' ' << r.y << ' ' << r.w << ' ' << r.h;
     return out;
 }
 
@@ -42,29 +42,30 @@ NodeArray getChildren(xml_node<>*& parent)
     return output;
 }
 
-Rectangle getElementBox(const XmlParser::Container& parent, int index)
+SDL_Rect getElementBox(const XmlParser::Container& parent, int index)
 {
     float ratio{ parent.division_table[index] };
     float stack_position{0};
     for (int i{0}; i < index; i++) {
         stack_position += parent.division_table[i];
     }
-    Rectangle rect = {
+    SDL_Rect rect = {
         (parent.isVertical) ? parent.rect.x
-         : (parent.rect.width * stack_position) + parent.rect.x,
+         : (parent.rect.w * stack_position) + parent.rect.x,
         (!parent.isVertical) ? parent.rect.y
-         : (parent.rect.height * stack_position) + parent.rect.y,
-        (parent.isVertical) ? parent.rect.width
-         : parent.rect.width * ratio,
-        (!parent.isVertical) ? parent.rect.height
-         : parent.rect.height * ratio
+         : (parent.rect.h * stack_position) + parent.rect.y,
+        (parent.isVertical) ? parent.rect.w
+         : parent.rect.w * ratio,
+        (!parent.isVertical) ? parent.rect.h
+         : parent.rect.h * ratio
     };
     return rect;
 };
 
 long XmlParser::id_generator{0};
 
-XmlParser::XmlParser(std::string file, const Audio& cli) : audio_cli{cli} 
+XmlParser::XmlParser(std::string file, const Audio& cli, SDL_Renderer* rend)
+ : audio_cli{cli}, renderer{rend}
 {
     std::ifstream stream{file};
     if (!stream.is_open()) {
@@ -111,7 +112,6 @@ void XmlParser::render()
             base_font_size = bp.second;
     }
     //std::cout << "At " << window_width << " width, font size is " << base_font_size << '\n';
-
     //start traversing the DOM;
     while (target)
     {
@@ -215,8 +215,8 @@ void XmlParser::processNode(xml_node<>* node, int depth, int index)
         else createId(node, id);
 
         //calculate the rectangle
-        Rectangle rect;
-        if (depth == 0) rect = { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
+        SDL_Rect rect{0, 0, 0, 0};
+        if (depth == 0) SDL_GetRendererOutputSize(renderer, &rect.w, &rect.h);
         else {
             auto parentData = getParentNode(node);
             rect = getElementBox(parentData, index);
@@ -277,7 +277,7 @@ void XmlParser::createComponent(xml_node<>* node, int index)
             audio_cli.getBuffer(channel),
             drawfunc,
             getElementBox(parentData, index),
-            {c_label, RAYWHITE, base_font_size, 0, 0}
+            {c_label, fromHex(0xffffff), base_font_size, 0, 0}
         ));
     } else if (c_class == "Control")
     {
@@ -292,7 +292,7 @@ void XmlParser::createComponent(xml_node<>* node, int index)
             setupfunc(),
             channel,
             getElementBox(parentData, index),
-            {c_label, RAYWHITE, base_font_size, 0, 0}
+            {c_label, fromHex(0xffffff), base_font_size, 0, 0}
         ));  
     } else {
         std::cout << "Unregistered component class " << node->name() << '\n';
@@ -309,12 +309,12 @@ void XmlParser::drawComponents()
 
 void XmlParser::drawNodeBoxes()
 {
-    for (const auto& node : boxModel)
+    /*for (const auto& node : boxModel)
         DrawRectangleLines(
             node.rect.x,
             node.rect.y,
-            node.rect.width,
-            node.rect.height,
-            RAYWHITE
-        );
+            node.rect.w,
+            node.rect.h,
+            fromHex(0xffffff)
+        );*/
 }

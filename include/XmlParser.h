@@ -1,6 +1,7 @@
 #pragma once
-#include "rapidxml.hpp"
 #include <string>
+#include <SDL2/SDL.h>
+#include "rapidxml.hpp"
 #include "Library.h"
 
 using namespace rapidxml;
@@ -11,7 +12,7 @@ public:
     struct Container {
         std::string id;
         Flow isVertical;
-        Rectangle rect;
+        SDL_Rect rect;
         std::vector<float> division_table;
         int inverted;
     };
@@ -19,7 +20,7 @@ public:
     using BoxModel = std::vector<Container>;
 
     XmlParser() = default;
-    XmlParser(std::string file, const Audio& cli);
+    XmlParser(std::string file, const Audio& cli, SDL_Renderer*);
     ~XmlParser();
 
     void drawNodeBoxes();
@@ -40,8 +41,10 @@ private:
     //for fetching the buffers;
     const Audio& audio_cli;
 
-    void clearView();
+    //for access to the renderer
+    SDL_Renderer* renderer;
 
+    void clearView();
     void processNode(xml_node<>*, int, int);
     void createComponent(xml_node<>*, int i);
     void createId(xml_node<>*, std::string&);

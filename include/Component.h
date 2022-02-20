@@ -1,8 +1,9 @@
 
 #pragma once
-#include <raylib.h>
+#include <SDL2/SDL.h>
 #include <string>
 #include <functional>
+#include "Library.h"
 
 class BaseComponent 
 {
@@ -15,10 +16,10 @@ public:
         int offX;
         int offY;
     };
-    Rectangle rect;
+    Rect rect;
     Label label;
     
-    BaseComponent(std::string id, Rectangle r, Label l) : rect{r}, label{l} {this->id = id;}
+    BaseComponent(std::string id, Rect r, Label l) : rect{r}, label{l} {this->id = id;}
     virtual ~BaseComponent() {}
 
     virtual void draw() {}
@@ -35,13 +36,13 @@ public:
     using DrawFunction = std::function<void(Component<Buffer>*)>;
     Component() = default;
 
-    Component(std::string id, const Buffer& b, DrawFunction d, Rectangle r, Label l) 
+    Component(std::string id, const Buffer& b, DrawFunction d, Rect r, Label l) 
     : BaseComponent{id, r, l}, buffer{b}
     {  
         this->render = d;
     } 
 
-    Component(std::string id, const Buffer& b, DrawFunction d, int ch, Rectangle r, Label l) 
+    Component(std::string id, const Buffer& b, DrawFunction d, int ch, Rect r, Label l) 
      : BaseComponent{id, r, l}, buffer{b}
     {
         this->render = d;
