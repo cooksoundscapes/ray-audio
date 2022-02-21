@@ -1,4 +1,4 @@
-#include "Library.h"
+#include "CairoLib.hpp"
 
 setup_t Slider = []()
 {   
@@ -30,9 +30,9 @@ setup_t Slider = []()
                     self->midi_value = newVal;
                 }*/
             float ratio = self->midi_value/range.second;
-            drawLabel(self->label, bar);
-            DrawRect( bar, fromHex(0x22aa00) );
-            drawMovingBar(bar, ratio, fromHex(0x22ff00), vertical, inverted);
+            CairoLib::DrawText(self->label, bar);
+            CairoLib::DrawRect( bar, fromHex(0x22aa00) );
+            CairoLib::DrawMovingBar(bar, ratio, fromHex(0x22ff00), vertical, inverted);
         }
     );
 };

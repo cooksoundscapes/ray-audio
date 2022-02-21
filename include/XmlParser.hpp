@@ -2,7 +2,7 @@
 #include <string>
 #include <SDL2/SDL.h>
 #include "rapidxml.hpp"
-#include "Library.h"
+#include "Library.hpp"
 
 using namespace rapidxml;
 
@@ -12,7 +12,7 @@ public:
     struct Container {
         std::string id;
         Flow isVertical;
-        SDL_Rect rect;
+        Rect rect;
         std::vector<float> division_table;
         int inverted;
     };
@@ -28,6 +28,7 @@ public:
 
     //traverses the DOM and call processNode() for each node;
     void render();
+    std::string view_name;
 
 private:
     std::vector<char> xml_copy;
@@ -43,12 +44,15 @@ private:
 
     //for access to the renderer
     SDL_Renderer* renderer;
+    int rend_w, rend_h;
+    int base_font_size;
 
     void clearView();
-    void processNode(xml_node<>*, int, int);
-    void createComponent(xml_node<>*, int i);
     void createId(xml_node<>*, std::string&);
-    int base_font_size;
+    void processNode(xml_node<>*, int, int);
+    
+    void createComponent(xml_node<>*, int i);
+    void createContainer(xml_node<>*, int i, int d);
 
     BaseComponent* getComponent(const std::string& id);
     const Container& getParentNode(xml_node<>*);

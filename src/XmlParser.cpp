@@ -1,4 +1,4 @@
-#include "XmlParser.h"
+#include "XmlParser.hpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -42,14 +42,14 @@ NodeArray getChildren(xml_node<>*& parent)
     return output;
 }
 
-SDL_Rect getElementBox(const XmlParser::Container& parent, int index)
+Rect getElementBox(const XmlParser::Container& parent, int index)
 {
     float ratio{ parent.division_table[index] };
     float stack_position{0};
     for (int i{0}; i < index; i++) {
         stack_position += parent.division_table[i];
     }
-    SDL_Rect rect = {
+    Rect rect = {
         (parent.isVertical) ? parent.rect.x
          : (parent.rect.w * stack_position) + parent.rect.x,
         (!parent.isVertical) ? parent.rect.y
@@ -84,18 +84,20 @@ XmlParser::XmlParser(std::string file, const Audio& cli, SDL_Renderer* rend)
     root = document.first_node();
 
     std::cout << "Opening " << root->name() << '\n';
-}
-
-void XmlParser::clearView()
-{
-    for (auto& comp : view)
-        delete comp;
-    view.clear();
+    view_name = root->name();
 }
 
 XmlParser::~XmlParser()
 {
     clearView();
+}
+
+
+void XmlParser::clearView()
+{
+    for (auto comp : view)
+        delete comp;
+    view.clear();
 }
 
 void XmlParser::render()
@@ -105,13 +107,16 @@ void XmlParser::render()
     index_pool.reserve(256);
     boxModel.clear();
     xml_node<>* target = root->first_node();
+
+    //update window size;
+    SDL_GetRendererOutputSize(renderer, &rend_w, &rend_h);  
+
     //calculate font based on window width:
     base_font_size = font_breakpoints.begin()->second;
     for (auto& bp : font_breakpoints) {
-        if (window_width > bp.first)
+        if (rend_w > bp.first)
             base_font_size = bp.second;
     }
-    //std::cout << "At " << window_width << " width, font size is " << base_font_size << '\n';
     //start traversing the DOM;
     while (target)
     {
@@ -183,120 +188,9 @@ void XmlParser::processNode(xml_node<>* node, int depth, int index)
         }
     }
     if (isContainer) {      
-        //count children and define division table;
-        auto children = getChildren(node);
-        std::vector<float> children_sizes;
-        float accumulated{1};
-        int dynamic_children{0};
-        //comb children and define fixed values;
-        for (auto& child : children) {
-            auto isFixed = child->first_attribute("fixed");
-            if (isFixed) {
-                float fixed_size = std::stof(isFixed->value());
-                children_sizes.push_back(fixed_size);
-                accumulated -= fixed_size;
-            } else {
-                children_sizes.push_back(0);
-                dynamic_children++;
-            }
-        }
-        //search for zeros and divide the accumulated value by them;
-        float dynamic_size{accumulated / dynamic_children};
-        for (size_t i{0}; i < children_sizes.size(); i++) {
-            if (children_sizes[i] == 0) {
-                children_sizes[i] = dynamic_size;
-            }
-        }
-
-        //fetch or generate ID;
-        std::string id;
-        auto old_id = node->first_attribute("id");
-        if (old_id) id = old_id->value();
-        else createId(node, id);
-
-        //calculate the rectangle
-        SDL_Rect rect{0, 0, 0, 0};
-        if (depth == 0) SDL_GetRendererOutputSize(renderer, &rect.w, &rect.h);
-        else {
-            auto parentData = getParentNode(node);
-            rect = getElementBox(parentData, index);
-        }
-        //calculating flow direction;
-        auto direction = container_types.find(node->name())->second;
-        
-        //registering Container data on class;  
-        boxModel.push_back({
-            id,
-            direction,
-            rect, 
-            children_sizes,
-            0
-        });
-
+        createContainer(node, index, depth);
     } else {
-        /*process as component*/
         createComponent(node, index);
-    }
-}
-
-void XmlParser::createComponent(xml_node<>* node, int index)
-{
-    if (!node->first_attribute("type")) {
-        std::cout << "Component doesn't have a type!\n";
-        return;
-    } 
-    auto parentData = getParentNode(node);
-
-    std::string id;
-    auto old_id = node->first_attribute("id");
-    if (old_id) {
-        //update only what's required and return;
-        auto component = getComponent(old_id->value());
-        component->rect = getElementBox(parentData, index);
-        component->label.size = base_font_size;
-        return;
-    }
-    createId(node, id);
-
-    std::string c_class{ node->name() };
-    std::string c_type { node->first_attribute("type")->value() };
-    std::string c_label{ node->first_attribute("label") ? node->first_attribute("label")->value() : "" };
-    int channel{0};    
-    if (node->first_attribute("channel"))
-        channel = std::stoi(node->first_attribute("channel")->value());
-
-    if (c_class == "Audio")
-    {
-        auto drawfunc = audio_types.find(c_type)->second;
-        if (!drawfunc) {
-            std::cout << "Unregistered component type " << c_type << '\n';
-            return;
-        }
-        view.push_back(new Component<Audio::AudioBuffer>(
-            id,
-            audio_cli.getBuffer(channel),
-            drawfunc,
-            getElementBox(parentData, index),
-            {c_label, fromHex(0xffffff), base_font_size, 0, 0}
-        ));
-    } else if (c_class == "Control")
-    {
-        auto setupfunc = control_types.find(c_type)->second;
-        if (!setupfunc) {
-            std::cout << "Unregistered component type " << c_type << '\n';
-            return;
-        }
-        view.push_back(new Component<Audio::MidiBuffer>(
-            id,
-            audio_cli.getMidiBuffer(),
-            setupfunc(),
-            channel,
-            getElementBox(parentData, index),
-            {c_label, fromHex(0xffffff), base_font_size, 0, 0}
-        ));  
-    } else {
-        std::cout << "Unregistered component class " << node->name() << '\n';
-        return;
     }
 }
 
@@ -317,4 +211,125 @@ void XmlParser::drawNodeBoxes()
             node.rect.h,
             fromHex(0xffffff)
         );*/
+}
+
+//-----ugly part------
+
+void XmlParser::createContainer(xml_node<>* node, int index, int depth)
+{
+//count children and define division table;
+    auto children = getChildren(node);
+    std::vector<float> children_sizes;
+    float accumulated{1};
+    int dynamic_children{0};
+    //comb children and define fixed values;
+    for (auto& child : children) {
+        auto isFixed = child->first_attribute("fixed");
+        if (isFixed) {
+            float fixed_size = std::stof(isFixed->value());
+            children_sizes.push_back(fixed_size);
+            accumulated -= fixed_size;
+        } else {
+            children_sizes.push_back(0);
+            dynamic_children++;
+        }
+    }
+    //search for zeros and divide the accumulated value by them;
+    float dynamic_size{accumulated / dynamic_children};
+    for (size_t i{0}; i < children_sizes.size(); i++) {
+        if (children_sizes[i] == 0)
+            children_sizes[i] = dynamic_size;
+    }
+
+    //fetch or generate ID;
+    std::string id;
+    auto old_id = node->first_attribute("id");
+    if (old_id) id = old_id->value();
+    else createId(node, id);
+
+    //calculate the rectangle
+    Rect rect;
+    if (depth == 0) {
+        rect = {0, 0, (float)rend_w, (float)rend_h};
+    } else {
+        auto parentData = getParentNode(node);
+        rect = getElementBox(parentData, index);
+    }
+    //calculating flow direction;
+    auto direction = container_types.find(node->name())->second;
+    
+    //registering Container data on class;  
+    boxModel.push_back({
+        id,
+        direction,
+        rect,
+        children_sizes,
+        0
+    });
+}
+
+void XmlParser::createComponent(xml_node<>* node, int index)
+{
+    auto type_attr{ node->first_attribute("type") };
+    if (!type_attr) {
+        std::cout << "Component doesn't have a type!\n";
+        return;
+    } 
+    auto parentData = getParentNode(node);
+
+    std::string id;
+    auto old_id = node->first_attribute("id");
+
+    if (old_id) {
+        //update only what's required and return;
+        auto component = getComponent(old_id->value());
+        component->rect = getElementBox(parentData, index);
+        component->label.size = base_font_size;
+        return;
+    }
+    
+    createId(node, id);
+
+    std::string c_class{ node->name() };
+    std::string c_type { type_attr->value() };
+    std::string c_label{ node->first_attribute("label") ? node->first_attribute("label")->value() : "" };
+    int channel{0};    
+    if (node->first_attribute("channel"))
+        channel = std::stoi(node->first_attribute("channel")->value());
+
+    if (c_class == "Audio")
+    {
+        auto typeExists = audio_types.find(c_type);
+        if (typeExists == audio_types.end()) {
+            std::cout << "Unregistered component type " << c_type << '\n';
+            return;
+        }
+        auto drawfunc = typeExists->second;
+        view.push_back(new Component<Audio::AudioBuffer>(
+            id,
+            audio_cli.getBuffer(channel),
+            drawfunc,
+            getElementBox(parentData, index),
+            {c_label, fromHex(0xffffff), base_font_size, 0, 0}
+        ));
+    } else if (c_class == "Control")
+    {
+        auto typeExists = control_types.find(c_type); 
+        if (typeExists == control_types.end()) {
+            std::cout << "Unregistered component type " << c_type << '\n';
+            return;
+        }
+        auto setupfunc = typeExists->second;
+        view.push_back(new Component<Audio::MidiBuffer>(
+            id,
+            audio_cli.getMidiBuffer(),
+            setupfunc(),
+            channel,
+            getElementBox(parentData, index),
+            {c_label, fromHex(0xffffff), base_font_size, 0, 0}
+        ));  
+    } else {
+        std::cout << "Unregistered component class " << node->name() << '\n';
+        return;
+    }
 }

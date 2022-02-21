@@ -1,0 +1,7 @@
+<Simple>
+    <Row>
+        <Audio type="VU" channel="0" label="L"/>
+        <Audio type="VU" channel="1" label="R"/>
+        <Audio type="whoo" />
+    </Row>
+</Simple>

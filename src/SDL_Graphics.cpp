@@ -1,4 +1,6 @@
-#include "SDL_Graphics.h"
+#include "SDL_Graphics.hpp"
+
+using namespace CairoLib;
 
 SDL_Engine::SDL_Engine(int w, int h) : width{w}, height{h}
 {
@@ -72,17 +74,31 @@ void SDL_Engine::loop(XmlParser* document)
     bool shouldClose{false};
     SDL_Event handler;
 
+    //set window name based on view file;
+    std::string newName = "display::" + document->view_name;
+    SDL_SetWindowTitle(window, newName.c_str());
+
+    //first render;
+    document->render();
+    std::cout << "render success, entering main loop;\n";
+
     while (!shouldClose) {
         while (SDL_PollEvent(&handler)) {
             if (handler.type == SDL_QUIT) {
                 shouldClose = true;
                 break;
+            } else if (handler.type == SDL_WINDOWEVENT) {
+                if (handler.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    document->render();
+                }
             }
         }
         beginDrawing();
-        
+
         document->drawComponents();
 
         endDrawing();
     }
+    SDL_DestroyTexture(finalCanvas);
+    finalCanvas = NULL;
 }

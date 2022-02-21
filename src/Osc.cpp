@@ -1,4 +1,4 @@
-#include "Osc.h"
+#include "Osc.hpp"
 #include <cstddef>
 #include <iostream>
 

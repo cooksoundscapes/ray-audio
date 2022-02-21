@@ -3,29 +3,17 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
-#include <cairo/cairo.h>
-#include "Audio.h"
-#include "Component.h"
+#include "Component.hpp"
+#include "Audio.hpp"
 
 using DrawControl = Component<Audio::MidiBuffer>::DrawFunction;
 using DrawAudio = Component<Audio::AudioBuffer>::DrawFunction;
 //setup_t returns the actual drawing function, providing a onetime setup;
 using setup_t = std::function<DrawControl()>;
 
-struct Rect{ float x, y, w, h; };
-struct Color{ double r, g, b, a; };
-
 enum Flow { H, V }; //horizontal, vertical
 const float spacing = 8;
-extern SDL_Point mouse_position;
-extern int window_width;
 
-/*
- * Using the Cairo lib;
- * The drawing functions must NOT interact with cairo objects and calls;
- */
-extern void drawMovingBar(Rect, float, Color, bool vertical = true, bool inverted = false);
-extern void drawLabel(BaseComponent::Label, Rect, bool centered = true);
 extern void updateValue(Component<Audio::MidiBuffer>*);
 extern Color fromHex(int);
 

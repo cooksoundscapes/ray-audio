@@ -3,7 +3,9 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <functional>
-#include "Library.h"
+
+struct Rect{ float x, y, w, h; };
+struct Color{ double r, g, b, a; };
 
 class BaseComponent 
 {

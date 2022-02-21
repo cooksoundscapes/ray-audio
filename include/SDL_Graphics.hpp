@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
-#include <cairo/cairo.h>
-#include "XmlParser.h"
+#include "XmlParser.hpp"
+#include "CairoLib.hpp"
 
 class SDL_Engine
 {
@@ -20,6 +20,5 @@ private:
     void beginDrawing();
     void endDrawing();
 
-    cairo_t* ctx;
     SDL_Texture* finalCanvas;
 };
