@@ -3,8 +3,8 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
-#include "Component.hpp"
 #include "Audio.hpp"
+#include "BaseComponent.hpp"
 
 using DrawControl = Component<Audio::MidiBuffer>::DrawFunction;
 using DrawAudio = Component<Audio::AudioBuffer>::DrawFunction;
@@ -24,15 +24,14 @@ const std::map<int, int> font_breakpoints{
     {720, 30}
 };
 
-//components
 extern DrawAudio VU;
-//extern DrawAudio Oscilloscope;
+extern DrawAudio Oscilloscope;
 
 extern setup_t Slider;
-/*extern setup_t Knob;
+extern setup_t Knob;
 extern setup_t Toggle;
 extern setup_t DirTree;
-extern setup_t Wavetable;
+/*extern setup_t Wavetable;
 extern setup_t Transport;
 extern setup_t Table;
 extern setup_t CarouselBox;
@@ -48,15 +47,15 @@ const std::map<std::string, Flow> container_types{
 
 const std::map<std::string, DrawAudio> audio_types{
     {"VU", VU},
-    //{"Oscilloscope", Oscilloscope}
+    {"Oscilloscope", Oscilloscope}
 };
 
 const std::map<std::string, setup_t> control_types{
     {"Slider", Slider},
-    /*{"Knob", Knob},
+    {"Knob", Knob},
     {"Toggle", Toggle},
     {"DirTree", DirTree},
-    {"Wavetable", Wavetable}
+    /*{"Wavetable", Wavetable}
     {"Table", Table},
     {"CarouselBox", CarouselBox},
     {"Multitable", Multitable},

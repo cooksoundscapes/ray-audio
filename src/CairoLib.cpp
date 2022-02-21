@@ -37,3 +37,21 @@ void CairoLib::DrawMovingBar
         color
     );
 }
+
+void CairoLib::DrawCircle(SDL_Point center, float radius, Color color, bool filled)
+{
+    cairo_set_source_rgba(ctx, color.r, color.g, color.b, color.a);
+    cairo_arc(ctx, center.x, center.y, radius, 0, PI*2);
+    if (filled) cairo_fill(ctx);
+    else {
+        cairo_stroke(ctx);
+    }
+}
+
+void CairoLib::DrawLine(SDL_Point start, SDL_Point end, Color color, float width)
+{
+    cairo_set_source_rgba(ctx, color.r, color.g, color.b, color.a);
+    cairo_move_to(ctx, start.x, start.y);
+    cairo_line_to(ctx, end.x, end.y);
+    cairo_stroke(ctx);
+}

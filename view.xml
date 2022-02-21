@@ -2,8 +2,8 @@
 <SimplePanel>
     <Row>
     <Control type="DirTree" fixed="0.2" />
-    <Column >
-        <Row fixed="0.2">
+    <Column>
+        <Row>
             <Audio type="VU" label="L" channel='0' />
             <Audio type="VU" label="R" channel='1' />
             <Audio type="VU" label="aux-L" channel='2' />

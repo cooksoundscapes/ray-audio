@@ -1,4 +1,4 @@
-#include "Library.h"
+#include "CairoLib.hpp"
 #include <filesystem>
 #include <sstream>  
 
@@ -56,47 +56,48 @@ setup_t DirTree = []()
         [directory, path](Component<Audio::MidiBuffer>* self) mutable
         {
             float font = self->label.size;
-            const Rectangle& base = self->rect;
+            const Rect& base = self->rect;
 
-            Rectangle textbox{ 
+            Rect textbox{ 
                 base.x+spacing, 
                 base.y+spacing,
-                base.width-spacing*2, 
+                base.w-spacing*2, 
                 font 
             };
-            int maxLength = textbox.width / (font);
+            int maxLength = textbox.w / (font);
 
-            DrawRectangleRec(base, fromHex(0x2f2f2f));
-            DrawRectangleRec(textbox, fromHex(0xa3a3a3));
-            DrawText( 
+            CairoLib::DrawRect(base, fromHex(0x2f2f2f));
+            CairoLib::DrawRect(textbox, fromHex(0xa3a3a3));
+            /*CairoLib::DrawText( 
                 TextSubtext(path.c_str(), 0, maxLength), 
                 textbox.x+4 , textbox.y+2, font, WHITE 
-            );
-            if ( (base.height) < (float)(directory.size()*font) ) {
+            );*/
+            if ( (base.h) < (float)(directory.size()*font) ) {
                 //needs a scrollbar;
             }
             int i{0};
             for (auto entry : directory)
             {
-                Rectangle filebox{
+                Rect filebox{
                     textbox.x,
                     base.y+spacing*2+((i+1)*font),
-                    textbox.width,
-                    textbox.height
+                    textbox.w,
+                    textbox.h
                 };
-                if ( (filebox.y+filebox.height) > base.height) break;
+                if ( (filebox.y+filebox.h) > base.h) break;
                 
-                bool active{CheckCollisionPointRec(mouse_position, filebox)};
+                bool active{false};
+                //bool active{CairoLib::CheckCollision(mouse_position, filebox)};
 
-                DrawRectangleRec(filebox, (active) ? 
+                CairoLib::DrawRect(filebox, (active) ? 
                     fromHex(0xddaa00) : (i%2 == 0) ? fromHex(0xa3a3a3) : fromHex(0xb0b0b0) 
                 );
-                DrawText(
+                /*DrawText(
                     TextSubtext(entry.path.c_str(), 0, maxLength), 
                     filebox.x*1.2f, filebox.y+2, font, WHITE 
-                );
+                );*/
                 i++;
-                if (active && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                /*if (active && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {
                     if (entry.isDir) {
                         path += '/'+entry.path;
@@ -106,7 +107,7 @@ setup_t DirTree = []()
                         path = getParentPath(path);
                         explore(path, directory);
                     } 
-                }
+                }*/
             }
         }
     );
