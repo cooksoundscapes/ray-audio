@@ -1,6 +1,11 @@
 #include "CairoLib.hpp"
 
 cairo_t* CairoLib::ctx;
+SDL_Point CairoLib::mouse_position;
+SDL_Point CairoLib::mouse_delta;
+bool CairoLib::MouseLeftButtonPressed;
+
+using namespace CairoLib;
 
 void CairoLib::DrawRect
 (Rect rect, Color color, bool filled, float line)
@@ -54,4 +59,34 @@ void CairoLib::DrawLine(SDL_Point start, SDL_Point end, Color color, float width
     cairo_move_to(ctx, start.x, start.y);
     cairo_line_to(ctx, end.x, end.y);
     cairo_stroke(ctx);
+}
+
+bool CairoLib::CheckCollision(SDL_Point p, Rect r)
+{
+    if ( ((float)p.x > r.x) && ((float)p.x < (r.x+r.w)) &&
+         ((float)p.y > r.y) && ((float)p.y < (r.y+r.h)) )
+    return true;
+    else return false;
+}
+
+//circle de
+bool CairoLib::CheckCollision(SDL_Point p, int r1, SDL_Point c, int r2)
+{
+    int dx = p.x - c.x;
+    int dy = p.y - c.y;
+    float distance = sqrt(dx*dx + dy*dy);
+    if (distance < r1 + r2) return true;
+    else return false;
+}
+SDL_Point CairoLib::GetMouseDelta() 
+{
+    SDL_Point diff{0, 0};   
+    if ((mouse_position.x != mouse_delta.x) || (mouse_position.y != mouse_delta.y)) {
+        diff = {
+            mouse_position.x - mouse_delta.x,
+            mouse_position.y - mouse_delta.y
+        };
+        mouse_delta = mouse_position;
+    }
+    return diff;
 }

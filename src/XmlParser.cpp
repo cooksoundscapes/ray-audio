@@ -8,7 +8,7 @@
 using NodeArray = std::vector<xml_node<>*>;
 
 //overloading stream for Rectangle
-std::ostream& operator <<(std::ostream& out, const SDL_Rect& r)
+std::ostream& operator <<(std::ostream& out, const Rect& r)
 {
     out << r.x << ' ' << r.y << ' ' << r.w << ' ' << r.h;
     return out;
@@ -108,13 +108,10 @@ void XmlParser::render()
     boxModel.clear();
     xml_node<>* target = root->first_node();
 
-    //update window size;
-    SDL_GetRendererOutputSize(renderer, &rend_w, &rend_h);  
-
     //calculate font based on window width:
     base_font_size = font_breakpoints.begin()->second;
     for (auto& bp : font_breakpoints) {
-        if (rend_w > bp.first)
+        if (win_w > bp.first)
             base_font_size = bp.second;
     }
     //start traversing the DOM;
@@ -250,7 +247,7 @@ void XmlParser::createContainer(xml_node<>* node, int index, int depth)
     //calculate the rectangle
     Rect rect;
     if (depth == 0) {
-        rect = {0, 0, (float)rend_w, (float)rend_h};
+        rect = {0, 0, (float)win_w, (float)win_h};
     } else {
         auto parentData = getParentNode(node);
         rect = getElementBox(parentData, index);

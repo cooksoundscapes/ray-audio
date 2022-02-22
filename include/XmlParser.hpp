@@ -28,6 +28,8 @@ public:
 
     //traverses the DOM and call processNode() for each node;
     void render();
+
+    int win_w, win_h;
     std::string view_name;
 
 private:
@@ -44,7 +46,6 @@ private:
 
     //for access to the renderer
     SDL_Renderer* renderer;
-    int rend_w, rend_h;
     int base_font_size;
 
     void clearView();

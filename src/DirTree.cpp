@@ -3,6 +3,7 @@
 #include <sstream>  
 
 namespace fs = std::filesystem;
+using namespace CairoLib;
 
 struct FileInfo {
     std::string path;
@@ -66,8 +67,8 @@ setup_t DirTree = []()
             };
             int maxLength = textbox.w / (font);
 
-            CairoLib::DrawRect(base, fromHex(0x2f2f2f));
-            CairoLib::DrawRect(textbox, fromHex(0xa3a3a3));
+            DrawRect(base, fromHex(0x2f2f2f));
+            DrawRect(textbox, fromHex(0xa3a3a3));
             /*CairoLib::DrawText( 
                 TextSubtext(path.c_str(), 0, maxLength), 
                 textbox.x+4 , textbox.y+2, font, WHITE 
@@ -86,10 +87,9 @@ setup_t DirTree = []()
                 };
                 if ( (filebox.y+filebox.h) > base.h) break;
                 
-                bool active{false};
-                //bool active{CairoLib::CheckCollision(mouse_position, filebox)};
+                bool active{CheckCollision(mouse_position, filebox)};
 
-                CairoLib::DrawRect(filebox, (active) ? 
+                DrawRect(filebox, (active) ? 
                     fromHex(0xddaa00) : (i%2 == 0) ? fromHex(0xa3a3a3) : fromHex(0xb0b0b0) 
                 );
                 /*DrawText(
@@ -97,7 +97,7 @@ setup_t DirTree = []()
                     filebox.x*1.2f, filebox.y+2, font, WHITE 
                 );*/
                 i++;
-                /*if (active && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                if (active && MouseLeftButtonPressed)
                 {
                     if (entry.isDir) {
                         path += '/'+entry.path;
@@ -107,7 +107,7 @@ setup_t DirTree = []()
                         path = getParentPath(path);
                         explore(path, directory);
                     } 
-                }*/
+                }
             }
         }
     );

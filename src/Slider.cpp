@@ -1,5 +1,7 @@
 #include "CairoLib.hpp"
 
+using namespace CairoLib;
+
 setup_t Slider = []()
 {   
     std::pair<float, float> range{0, 127};   
@@ -21,18 +23,18 @@ setup_t Slider = []()
                 self->rect.w - (spacing * 2),
                 20,
             };
-            /*if (CheckCollision(mouse_position, bar))
-                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            if (CheckCollision(mouse_position, bar))
+                if (MouseLeftButtonPressed) {
                     float newVal{ vertical ? 
-                        (((bar.y + bar.height) - mouse_position.y) / bar.height) * range.second
-                        : ((mouse_position.x - bar.x) / bar.width) * range.second
+                        (((bar.y + bar.h) - mouse_position.y) / bar.h) * range.second
+                        : ((mouse_position.x - bar.x) / bar.w) * range.second
                     };
                     self->midi_value = newVal;
-                }*/
+                }
             float ratio = self->midi_value/range.second;
-            CairoLib::DrawText(self->label, bar);
-            CairoLib::DrawRect( bar, fromHex(0x22aa00) );
-            CairoLib::DrawMovingBar(bar, ratio, fromHex(0x22ff00), vertical, inverted);
+            DrawText(self->label, bar);
+            DrawRect( bar, fromHex(0x114400) );
+            DrawMovingBar(bar, ratio, fromHex(0x22ff00), vertical, inverted);
         }
     );
 };

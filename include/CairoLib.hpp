@@ -7,6 +7,9 @@
 namespace CairoLib
 {
     extern cairo_t* ctx;
+    extern SDL_Point mouse_position;
+    extern SDL_Point mouse_delta;
+    extern bool MouseLeftButtonPressed;
 
     extern void DrawRect(Rect, Color, bool filled=true, float line=1);
     extern void DrawText(BaseComponent::Label&, Rect&, bool centered=true);
@@ -14,5 +17,8 @@ namespace CairoLib
     extern void DrawLine(SDL_Point start, SDL_Point end, Color, float line_width=1.0f);
     extern void DrawMovingBar(Rect, float, Color, bool vertical=true, bool inverted=false);
     extern int MeasureText(std::string content, int font_size);
-    extern bool CheckCollision(SDL_Point, SDL_Rect);
+    extern bool CheckCollision(SDL_Point, Rect);
+    extern bool CheckCollision(SDL_Point, int, SDL_Point, int);
+    extern bool CheckCollision(Rect, Rect);
+    extern SDL_Point GetMouseDelta();
 };

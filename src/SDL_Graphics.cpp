@@ -65,32 +65,66 @@ void SDL_Engine::endDrawing()
 
 void SDL_Engine::loop(XmlParser* document)
 {
+    bool shouldClose{false};
+    SDL_Event handler;
+
     finalCanvas = SDL_CreateTexture(
         renderer,
         SDL_PIXELFORMAT_ARGB8888,
         SDL_TEXTUREACCESS_STREAMING,
         width, height
     );
-    bool shouldClose{false};
-    SDL_Event handler;
-
     //set window name based on view file;
     std::string newName = "display::" + document->view_name;
     SDL_SetWindowTitle(window, newName.c_str());
 
     //first render;
+    SDL_GetWindowSize(window, &document->win_w, &document->win_h);
     document->render();
     std::cout << "render success, entering main loop;\n";
 
     while (!shouldClose) {
         while (SDL_PollEvent(&handler)) {
-            if (handler.type == SDL_QUIT) {
-                shouldClose = true;
-                break;
-            } else if (handler.type == SDL_WINDOWEVENT) {
-                if (handler.window.event == SDL_WINDOWEVENT_RESIZED) {
-                    document->render();
-                }
+            switch (handler.type)
+            {
+                case SDL_QUIT:
+                    shouldClose = true;
+                    break;
+                case SDL_WINDOWEVENT:
+                    if (handler.window.event == SDL_WINDOWEVENT_RESIZED) {
+                        SDL_GetRendererOutputSize(renderer, &width, &height);
+                        SDL_DestroyTexture(finalCanvas);
+                        finalCanvas = SDL_CreateTexture(
+                            renderer,
+                            SDL_PIXELFORMAT_ARGB8888,
+                            SDL_TEXTUREACCESS_STREAMING,
+                            width, height
+                        );
+                        document->win_w = width;
+                        document->win_h = height;
+                        document->render();
+                    }
+                    break;
+                case SDL_MOUSEMOTION:
+                    mouse_position = {
+                        handler.motion.x,
+                        handler.motion.y
+                    };
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (handler.button.button == SDL_BUTTON_LEFT) {
+                        MouseLeftButtonPressed = true;
+                        mouse_delta = {
+                            handler.button.x,
+                            handler.button.y
+                        };
+                    }
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    if (handler.button.button == SDL_BUTTON_LEFT) {
+                        MouseLeftButtonPressed = false;
+                    }
+                    break;
             }
         }
         beginDrawing();

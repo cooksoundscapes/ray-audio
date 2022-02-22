@@ -20,5 +20,5 @@ private:
     void beginDrawing();
     void endDrawing();
 
-    SDL_Texture* finalCanvas;
+    SDL_Texture* finalCanvas = NULL;
 };
