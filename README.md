@@ -10,17 +10,31 @@ This software interprets XML and Lua files for creating audio-oriented UIs. It's
 * State control via presets / snapshots (yet to be implemented);
 * SDL and Cairo as the graphics engine.
   
-A XML file example:
+A simple, theme-less example:
+
+![](display.gif)
+
+And the XML file example:
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <SimplePanel>
-    <Column>
+    <Row>
+    <Control type="DirTree" fixed="0.2" />
+    <Column >
         <Row>
             <Audio type="VU" label="L" channel='0' />
             <Audio type="VU" label="R" channel='1' />
             <Audio type="VU" label="aux-L" channel='2' />
             <Audio type="VU" label="aux-R" channel='3' />
-            <Column>
+            <Column fixed="0.1">
+                <Control type="Knob" channel='48' label="k1" />
+                <Control type="Knob" label="k2" />
+            </Column>
+            <Column fixed="0.1">
+                <Control type="Knob" label="k3" />
+                <Control type="Knob" label="k4" />
+            </Column>
+            <Column >
                 <Control type="Toggle" label="check this" />
                 <Control type="Toggle" label="also this" />
             </Column>
@@ -28,14 +42,6 @@ A XML file example:
         <Row>
             <Audio type="Oscilloscope" channel='0' label="Scope-L" />
             <Audio type="Oscilloscope" channel='1' label="Scope-R" />
-            <Column>
-                <Control type="Knob" channel='48' label="k1" />
-                <Control type="Knob" label="k2" />
-            </Column>
-            <Column>
-                <Control type="Knob" label="k3" />
-                <Control type="Knob" label="k4" />
-            </Column>
         </Row>
         <Row>
             <Control type="Slider" channel="48" label="Sl-1" />
@@ -49,6 +55,7 @@ A XML file example:
             <Control type="Slider" channel="56" label="Sl-9" />
         </Row>
     </Column>
+    </Row>
 </SimplePanel>
 ```
 
