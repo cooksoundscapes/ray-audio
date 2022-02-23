@@ -1,11 +1,19 @@
 #include "CairoLib.hpp"
+#include <pango/pangocairo.h>
 
-cairo_t* CairoLib::ctx;
+cairo_t* CairoLib::ctx; 
 SDL_Point CairoLib::mouse_position;
 SDL_Point CairoLib::mouse_delta;
 bool CairoLib::MouseLeftButtonPressed;
 
 using namespace CairoLib;
+
+//overloading stream for Rectangle
+std::ostream& operator <<(std::ostream& out, const Rect& r)
+{
+    out << r.x << ' ' << r.y << ' ' << r.w << ' ' << r.h;
+    return out;
+}
 
 void CairoLib::DrawRect
 (Rect rect, Color color, bool filled, float line)
@@ -17,13 +25,6 @@ void CairoLib::DrawRect
     else {
         cairo_stroke(ctx);
     }
-}
-
-void CairoLib::DrawText(BaseComponent::Label& label, Rect& rect, bool centered)
-{
-    int offX{0};
-    if (centered)
-        offX = (rect.w/2) - (MeasureText(label.text, label.size)/2);
 }
 
 int CairoLib::MeasureText(std::string text, int fontSize)
@@ -89,4 +90,47 @@ SDL_Point CairoLib::GetMouseDelta()
         mouse_delta = mouse_position;
     }
     return diff;
+}
+
+bool CairoLib::GetMouseLeftClick()
+{
+    static bool lastState;
+    bool clicked{false};
+    if (MouseLeftButtonPressed && (MouseLeftButtonPressed != lastState))
+        clicked = true;
+    lastState = MouseLeftButtonPressed;
+    return clicked;
+}
+
+constexpr const char* testfont = "Sans";
+
+void CairoLib::DrawText(Text& text, Rect& rect, bool centered, float maxwidth)
+{
+    PangoLayout* layout = pango_cairo_create_layout(ctx);
+    pango_layout_set_text(layout, text.text.c_str(), -1);
+
+    std::string font = "Sans " + std::to_string(text.size);
+    PangoFontDescription* desc = pango_font_description_from_string(font.c_str());
+    pango_layout_set_font_description(layout, desc);
+    pango_font_description_free(desc);
+    
+    int offX{0}, txt_size, txt_height;
+    pango_layout_get_size(layout, &txt_size, &txt_height);
+    if (centered) offX = rect.w/2 - txt_size/PANGO_SCALE/2;
+    
+    if (maxwidth > 0) {
+        pango_layout_set_ellipsize(layout, PANGO_ELLIPSIZE_END);
+        pango_layout_set_width(layout, (int)(maxwidth*PANGO_SCALE));
+    }
+    cairo_set_source_rgba(ctx, text.color.r, text.color.g, text.color.b, text.color.a);
+    double textX = rect.x + text.offX + offX;
+    double textY = rect.y - (txt_height/PANGO_SCALE) + text.offY;
+
+    //std::cout << "drawing text " << text.text << " at " << textX << ' ' << textY << '\n';
+
+    cairo_move_to(ctx, textX, textY);
+
+    pango_cairo_show_layout(ctx, layout);
+
+    g_object_unref (layout);
 }

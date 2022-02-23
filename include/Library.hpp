@@ -20,8 +20,8 @@ extern Color fromHex(int);
 //breakpoints based on window width;
 const std::map<int, int> font_breakpoints{
     {320, 10},
-    {480, 20},
-    {720, 30}
+    {480, 14},
+    {720, 20}
 };
 
 extern DrawAudio VU;

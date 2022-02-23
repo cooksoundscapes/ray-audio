@@ -7,13 +7,6 @@
 
 using NodeArray = std::vector<xml_node<>*>;
 
-//overloading stream for Rectangle
-std::ostream& operator <<(std::ostream& out, const Rect& r)
-{
-    out << r.x << ' ' << r.y << ' ' << r.w << ' ' << r.h;
-    return out;
-}
-
 NodeArray filterNode(xml_node<>*& parent, std::string name)
 {
     NodeArray output;

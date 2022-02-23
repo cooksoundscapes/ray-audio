@@ -12,7 +12,7 @@ DrawAudio Oscilloscope = [](Component<Audio::AudioBuffer>* self)
     float jump = cnv.w / self->buffer.size();
 
     CairoLib::DrawRect(cnv, fromHex(0x999999));
-    //CairoLib::DrawText(self->label, cnv, false);
+    CairoLib::DrawText(self->label, cnv, false);
 
     for (size_t i{0}; i < self->buffer.size()-1; i++)
     {

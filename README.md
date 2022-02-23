@@ -8,13 +8,9 @@ This software interprets XML and Lua files for creating audio-oriented UIs. It's
 * Native audio input ports, for generating visualizations;
 * Native MIDI input ports;
 * State control via presets / snapshots (yet to be implemented);
-* Raylib as the graphics engine.
+* SDL and Cairo as the graphics engine.
   
-A simple, theme-less example:
-
-![](rayaudio.gif)
-  
-The XML file example:
+A XML file example:
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <SimplePanel>

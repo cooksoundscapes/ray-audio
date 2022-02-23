@@ -1,5 +1,7 @@
 #include "CairoLib.hpp"
 
+using namespace CairoLib;
+
 setup_t Toggle = []()
 {
     return DrawControl(
@@ -13,14 +15,14 @@ setup_t Toggle = []()
             };
             updateValue(self);
 
-            /*if (CheckCollisionPointRec(mouse, c_box))
-                if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+            if (CheckCollision(mouse_position, c_box))
+                if(GetMouseLeftClick())
                     self->midi_value = !self->midi_value;
 
-            drawLabel(self->label, c_box);*/
+            DrawText(self->label, c_box);
             
             Color col{ (self->midi_value > 0) ? fromHex(0x22dd00) : fromHex(0x116600) };
-            CairoLib::DrawRect( c_box, col );
+            DrawRect( c_box, col);
         }
     );
 };

@@ -28,7 +28,7 @@ void explore(std::string path, std::vector<FileInfo>& tree)
         });
     }
     std::sort(tree.begin(), tree.end(), isDir);
-    tree.insert(tree.begin(), {"..", false, 0});
+    tree.insert(tree.begin(), {"↩", false, 0});
 }
 
 std::string getParentPath(std::string path)
@@ -56,24 +56,25 @@ setup_t DirTree = []()
     return DrawControl(
         [directory, path](Component<Audio::MidiBuffer>* self) mutable
         {
-            float font = self->label.size;
+            float font = self->label.size*.75;
+            float box_height = font * (96.0f/72.0f);
             const Rect& base = self->rect;
-
+            
             Rect textbox{ 
                 base.x+spacing, 
                 base.y+spacing,
                 base.w-spacing*2, 
-                font 
+                box_height 
             };
             int maxLength = textbox.w / (font);
 
             DrawRect(base, fromHex(0x2f2f2f));
             DrawRect(textbox, fromHex(0xa3a3a3));
-            /*CairoLib::DrawText( 
-                TextSubtext(path.c_str(), 0, maxLength), 
-                textbox.x+4 , textbox.y+2, font, WHITE 
-            );*/
-            if ( (base.h) < (float)(directory.size()*font) ) {
+            
+            Text field{ path, fromHex(0xffffff), (int)font, 4, (int)box_height+2 };
+            CairoLib::DrawText( field, textbox, false, textbox.w-4);
+
+            if ( (base.h) < (float)(directory.size()*box_height) ) {
                 //needs a scrollbar;
             }
             int i{0};
@@ -81,7 +82,7 @@ setup_t DirTree = []()
             {
                 Rect filebox{
                     textbox.x,
-                    base.y+spacing*2+((i+1)*font),
+                    base.y+spacing*2+((i+1)*box_height),
                     textbox.w,
                     textbox.h
                 };
@@ -92,18 +93,21 @@ setup_t DirTree = []()
                 DrawRect(filebox, (active) ? 
                     fromHex(0xddaa00) : (i%2 == 0) ? fromHex(0xa3a3a3) : fromHex(0xb0b0b0) 
                 );
-                /*DrawText(
-                    TextSubtext(entry.path.c_str(), 0, maxLength), 
-                    filebox.x*1.2f, filebox.y+2, font, WHITE 
-                );*/
+
+                Text field{ 
+                    entry.path, 
+                    (!entry.isDir || active) ? fromHex(0xffffff) : fromHex(0xaa5500),
+                    (int)font, 4, (int)box_height+2 };
+                CairoLib::DrawText( field, filebox, false, filebox.w-4);
+
                 i++;
-                if (active && MouseLeftButtonPressed)
+                if (active && GetMouseLeftClick())
                 {
                     if (entry.isDir) {
                         path += '/'+entry.path;
                         explore(path, directory);
                     }
-                    else if (entry.path == "..") {
+                    else if (entry.path == "↩") {
                         path = getParentPath(path);
                         explore(path, directory);
                     } 

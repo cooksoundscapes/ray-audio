@@ -30,7 +30,7 @@ DrawAudio VU = [](Component<Audio::AudioBuffer>* self)
     }
     rms = rms/self->buffer.size();
 
-    //CairoLib::DrawText(self->label, bar);
+    CairoLib::DrawText(self->label, bar);
     CairoLib::DrawRect(bar, fromHex(0x114400));
     CairoLib::DrawMovingBar(bar, rms, fromHex(0x22ff00), vertical, inverted);
 };

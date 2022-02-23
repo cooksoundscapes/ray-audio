@@ -38,7 +38,13 @@ setup_t Knob = []()
                 (int)(sin(angle) * radius + center.y)
             };
             DrawLine(center, radians, fromHex(0xffffff) );
-            //drawLabel(self->label, {center.x - radius, center.y - radius, radius*2, radius*2});
+            Rect bbox{
+                (float)center.x-radius, 
+                (float)center.y-radius, 
+                radius*2, 
+                radius*2
+            };
+            DrawText(self->label, bbox);
         }
     );
 };
