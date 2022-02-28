@@ -1,7 +1,9 @@
 #include "CairoLib.hpp"
 #include <pango/pangocairo.h>
 
-cairo_t* CairoLib::ctx; 
+cairo_t* CairoLib::ctx = nullptr;
+cairo_surface_t* CairoLib::final_canvas = nullptr;
+
 SDL_Point CairoLib::mouse_position;
 SDL_Point CairoLib::mouse_delta;
 bool CairoLib::MouseLeftButtonPressed;
@@ -13,6 +15,19 @@ std::ostream& operator <<(std::ostream& out, const Rect& r)
 {
     out << r.x << ' ' << r.y << ' ' << r.w << ' ' << r.h;
     return out;
+}
+
+void CairoLib::CreateSurface(void* pixels, int w, int h, int stride)
+{
+   final_canvas = cairo_image_surface_create_for_data(
+        (unsigned char*) pixels,
+        CAIRO_FORMAT_ARGB32,
+        w, h, stride
+    );
+    ctx = cairo_create(final_canvas);
+    cairo_set_source_rgba(ctx, 0, 0, 0, 1.0);
+    cairo_rectangle(ctx, 0, 0, w, h);
+    cairo_fill(ctx);
 }
 
 void CairoLib::DrawRect
@@ -134,3 +149,15 @@ void CairoLib::DrawText(Text& text, Rect& rect, bool centered, float maxwidth)
 
     g_object_unref (layout);
 }
+
+void CairoLib::BeginPreRender(cairo_surface_t* surf, float w, float h)
+{
+    surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
+    ctx = cairo_create(surf);
+}
+
+void CairoLib::PaintSurface(cairo_surface_t* surf, float x, float y)
+{
+    cairo_set_source_surface(ctx, surf, x, y);
+    cairo_paint(ctx);
+}   

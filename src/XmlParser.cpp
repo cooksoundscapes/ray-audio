@@ -194,13 +194,9 @@ void XmlParser::drawComponents()
 void XmlParser::drawNodeBoxes()
 {
     /*for (const auto& node : boxModel)
-        DrawRectangleLines(
-            node.rect.x,
-            node.rect.y,
-            node.rect.w,
-            node.rect.h,
-            fromHex(0xffffff)
-        );*/
+        if (node.bordered)
+            CairoLib::DrawRect(node.rect, fromHex(0xffffff), false);
+    */
 }
 
 //-----ugly part------
@@ -309,11 +305,11 @@ void XmlParser::createComponent(xml_node<>* node, int index)
             std::cout << "Unregistered component type " << c_type << '\n';
             return;
         }
-        auto setupfunc = typeExists->second;
+        auto drawfunc = typeExists->second;
         view.push_back(new Component<Audio::MidiBuffer>(
             id,
             audio_cli.getMidiBuffer(),
-            setupfunc(),
+            drawfunc,
             channel,
             getElementBox(parentData, index),
             {c_label, fromHex(0xffffff), base_font_size, 0, 0}

@@ -40,20 +40,10 @@ void SDL_Engine::beginDrawing()
 
     SDL_LockTexture(finalCanvas, NULL, &pixels, &pitch);
 
-    cairo_surface_t *surface = cairo_image_surface_create_for_data(
-        (unsigned char*) pixels,
-        CAIRO_FORMAT_ARGB32,
-        width, height, pitch
-    );
-
-    ctx = cairo_create(surface);
+    CreateSurface(pixels, width, height, pitch);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
-
-    cairo_set_source_rgba(ctx, 0, 0, 0, 1.0);
-    cairo_rectangle(ctx, 0, 0, width, height);
-    cairo_fill(ctx);
 }
 
 void SDL_Engine::endDrawing()

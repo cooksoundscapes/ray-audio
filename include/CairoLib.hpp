@@ -7,10 +7,13 @@
 namespace CairoLib
 {
     extern cairo_t* ctx;
+    extern cairo_surface_t* final_canvas;
+    
     extern SDL_Point mouse_position;
     extern SDL_Point mouse_delta;
     extern bool MouseLeftButtonPressed;
 
+    extern void CreateSurface(void* pixels, int w, int h, int stride);
     extern void DrawRect(Rect, Color, bool filled=true, float line=1);
     extern void DrawText(Text&, Rect&, bool centered=true, float maxwidth=0);
     extern void DrawCircle(SDL_Point center, float radius, Color, bool filled=true);
@@ -22,4 +25,6 @@ namespace CairoLib
     extern bool CheckCollision(Rect, Rect);
     extern SDL_Point GetMouseDelta();
     extern bool GetMouseLeftClick();
-};
+    extern void BeginPreRender(cairo_surface_t*, float w, float h);
+    extern void PaintSurface(cairo_surface_t*, float x, float y);
+}

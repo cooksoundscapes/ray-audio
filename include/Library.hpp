@@ -8,8 +8,6 @@
 
 using DrawControl = Component<Audio::MidiBuffer>::DrawFunction;
 using DrawAudio = Component<Audio::AudioBuffer>::DrawFunction;
-//setup_t returns the actual drawing function, providing a onetime setup;
-using setup_t = std::function<DrawControl()>;
 
 enum Flow { H, V }; //horizontal, vertical
 const float spacing = 8;
@@ -27,18 +25,18 @@ const std::map<int, int> font_breakpoints{
 extern DrawAudio VU;
 extern DrawAudio Oscilloscope;
 
-extern setup_t Slider;
-extern setup_t Knob;
-extern setup_t Toggle;
-extern setup_t DirTree;
-/*extern setup_t Wavetable;
-extern setup_t Transport;
-extern setup_t Table;
-extern setup_t CarouselBox;
-extern setup_t Multitable;
-extern setup_t ListBox;
-extern setup_t Text;
-extern setup_t PadButton;*/
+extern DrawControl Slider;
+extern DrawControl Knob;
+extern DrawControl Toggle;
+extern DrawControl DirTree;
+extern DrawControl WaveFile;
+/*extern DrawControl Transport;
+extern DrawControl Table;
+extern DrawControl CarouselBox;
+extern DrawControl Multitable;
+extern DrawControl ListBox;
+extern DrawControl Text;
+extern DrawControl PadButton;*/
 
 const std::map<std::string, Flow> container_types{
     {"Row", H},
@@ -50,13 +48,13 @@ const std::map<std::string, DrawAudio> audio_types{
     {"Oscilloscope", Oscilloscope}
 };
 
-const std::map<std::string, setup_t> control_types{
+const std::map<std::string, DrawControl> control_types{
     {"Slider", Slider},
     {"Knob", Knob},
     {"Toggle", Toggle},
     {"DirTree", DirTree},
-    /*{"Wavetable", Wavetable}
-    {"Table", Table},
+    {"WaveFile", WaveFile}
+    /*{"Table", Table},
     {"CarouselBox", CarouselBox},
     {"Multitable", Multitable},
     {"ListBox", ListBox},

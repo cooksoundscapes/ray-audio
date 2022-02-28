@@ -5,6 +5,8 @@
 namespace fs = std::filesystem;
 using namespace CairoLib;
 
+namespace _DirTree {
+
 struct FileInfo {
     std::string path;
     bool isDir;
@@ -47,72 +49,76 @@ std::string getParentPath(std::string path)
     return parent;
 }
 
-setup_t DirTree = []()
+std::string path{"/home/me/samples"};
+std::vector<FileInfo> directory;
+bool done{false};
+
+}
+using namespace _DirTree;
+
+DrawControl DirTree = [](Component<Audio::MidiBuffer>* self)
 {
-    std::string path{"/home/me/samples"};
-    std::vector<FileInfo> directory;
-    explore(path, directory);
+    if (!done) {   
+        explore(path, directory);
+        done = true;
+    }
+        
+    float font = self->label.size*.75;
+    float box_height = font * (96.0f/72.0f);
+    const Rect& base = self->rect;
     
-    return DrawControl(
-        [directory, path](Component<Audio::MidiBuffer>* self) mutable
+    Rect textbox{ 
+        base.x+spacing, 
+        base.y+spacing,
+        base.w-spacing*2, 
+        box_height 
+    };
+    int maxLength = textbox.w / (font);
+
+    DrawRect(base, fromHex(0x2f2f2f));
+    DrawRect(textbox, fromHex(0xa3a3a3));
+    
+    Text field{ path, fromHex(0xffffff), (int)font, 4, (int)box_height+2 };
+    CairoLib::DrawText( field, textbox, false, textbox.w-4);
+
+    if ( (base.h) < (float)(directory.size()*box_height) ) {
+        //needs a scrollbar;
+    }
+    int i{0};
+    for (auto entry : directory)
+    {
+        Rect filebox{
+            textbox.x,
+            base.y+spacing*2+((i+1)*box_height),
+            textbox.w,
+            textbox.h
+        };
+        if ( (filebox.y+filebox.h) > base.h) break;
+        
+        bool active{CheckCollision(mouse_position, filebox)};
+
+        DrawRect(filebox, (active) ? 
+            fromHex(0xddaa00) : (i%2 == 0) ? fromHex(0xa3a3a3) : fromHex(0xb0b0b0) 
+        );
+
+        Text field{ 
+            (entry.isDir) ? entry.path : entry.path, //put a folder icon here!
+            (!entry.isDir || active) ? fromHex(0xffffff) : fromHex(0xaa5500),
+            (int)font, 4, (int)box_height+2 };
+        CairoLib::DrawText( field, filebox, false, filebox.w-4);
+
+        i++;
+        if (active && GetMouseLeftClick())
         {
-            float font = self->label.size*.75;
-            float box_height = font * (96.0f/72.0f);
-            const Rect& base = self->rect;
-            
-            Rect textbox{ 
-                base.x+spacing, 
-                base.y+spacing,
-                base.w-spacing*2, 
-                box_height 
-            };
-            int maxLength = textbox.w / (font);
-
-            DrawRect(base, fromHex(0x2f2f2f));
-            DrawRect(textbox, fromHex(0xa3a3a3));
-            
-            Text field{ path, fromHex(0xffffff), (int)font, 4, (int)box_height+2 };
-            CairoLib::DrawText( field, textbox, false, textbox.w-4);
-
-            if ( (base.h) < (float)(directory.size()*box_height) ) {
-                //needs a scrollbar;
+            if (entry.isDir) {
+                path += '/'+entry.path;
+                explore(path, directory);
             }
-            int i{0};
-            for (auto entry : directory)
-            {
-                Rect filebox{
-                    textbox.x,
-                    base.y+spacing*2+((i+1)*box_height),
-                    textbox.w,
-                    textbox.h
-                };
-                if ( (filebox.y+filebox.h) > base.h) break;
-                
-                bool active{CheckCollision(mouse_position, filebox)};
-
-                DrawRect(filebox, (active) ? 
-                    fromHex(0xddaa00) : (i%2 == 0) ? fromHex(0xa3a3a3) : fromHex(0xb0b0b0) 
-                );
-
-                Text field{ 
-                    entry.path, 
-                    (!entry.isDir || active) ? fromHex(0xffffff) : fromHex(0xaa5500),
-                    (int)font, 4, (int)box_height+2 };
-                CairoLib::DrawText( field, filebox, false, filebox.w-4);
-
-                i++;
-                if (active && GetMouseLeftClick())
-                {
-                    if (entry.isDir) {
-                        path += '/'+entry.path;
-                        explore(path, directory);
-                    }
-                    else if (entry.path == "↩") {
-                        path = getParentPath(path);
-                        explore(path, directory);
-                    } 
-                }
-            }
+            else if (entry.path == "↩") {
+                path = getParentPath(path);
+                explore(path, directory);
+            } 
         }
-    );
+    }
+        
 };

@@ -17,10 +17,10 @@ DrawAudio Oscilloscope = [](Component<Audio::AudioBuffer>* self)
     for (size_t i{0}; i < self->buffer.size()-1; i++)
     {
         float amp{
-            ((self->buffer[i]*-1)+1)*(midpoint) + self->rect.y + self->label.size
+            ((self->buffer[i]*-1)+1)*(midpoint) + cnv.y
         };
         float nextamp{
-            ((self->buffer[i+1]*-1)+1)*(midpoint) + self->rect.y + self->label.size
+            ((self->buffer[i+1]*-1)+1)*(midpoint) + cnv.y
         };
         CairoLib::DrawLine(
             { (int)(i*jump+cnv.x), (int)amp }, 

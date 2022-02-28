@@ -4,21 +4,21 @@ DrawAudio VU = [](Component<Audio::AudioBuffer>* self)
 {
     bool vertical{true}, inverted{false};
     
-    float fixed_width = 20;
+    float thin = std::min(20.0f, std::min(self->rect.w, self->rect.h) / 4);
 
     Rect bar;
     if (vertical) 
     bar = {
-        self->rect.x + (self->rect.w/2) - (fixed_width/2),
+        self->rect.x + (self->rect.w/2) - (thin/2),
         self->rect.y + self->label.size + (spacing * 1.5f),
-        fixed_width,
+        thin,
         self->rect.h - (spacing * 3) - self->label.size
     };
     else bar = {
         self->rect.x + spacing,
-        self->rect.y + self->label.size + (self->rect.h/2) - (fixed_width/2),
+        self->rect.y + self->label.size + (self->rect.h/2) - (thin/2),
         self->rect.w - (spacing * 2),
-        fixed_width,
+        thin,
     };
 
     float rms{0};
